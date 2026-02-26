@@ -4,6 +4,9 @@ jobs:
   run-build:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    strategy:
+      matrix:
+        arch: [amd64, arm64, mipsel_24kc]
     steps:
       - name: Check out repository code
         uses: actions/checkout@v6
@@ -20,11 +23,12 @@ jobs:
       - name: Run benchmark
         run: make bench
       - name: Build binaries
-        run: make build
+        run: |
+          make build ARCH=${{ matrix.arch }}
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: mieru
+          name: mieru-${{ matrix.arch }}
           path: |
             release/*.deb
             release/*.rpm
